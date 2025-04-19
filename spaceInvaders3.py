@@ -26,27 +26,42 @@ class Player(object):
 
 # Enemy class
 class Alien(object):
-    def __init__(self):
+    def __init__(self, x, y):
         # Load the original alien image
         original_img = pygame.image.load("alien.png")
         
-        # Scale the image to 5% of its original size
+        # Scale the image to 2.5% of its original size
         self.img = pygame.transform.scale(original_img, 
                                           (int(original_img.get_width() * 0.025), 
                                            int(original_img.get_height() * 0.025)))
         
-        # Center the alien horizontally
-        self.x = (800 - self.img.get_width()) // 2
-        self.y = 50  # Initial y position
-        self.x_change = 5
-        self.y_change = 10
+        # Set the initial position
+        self.x = x
+        self.y = y
+        self.x_change = 3  # Horizontal movement speed
+        self.y_change = 40  # Vertical movement when hitting a boundary
+
+    def move(self):
+        # Update the alien's position
+        self.x += self.x_change
+
+        # Reverse direction and move down when hitting screen boundaries
+        if self.x <= 0 or self.x >= 800 - self.img.get_width():
+            self.x_change *= -1
+            self.y += self.y_change
 
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
 
-# Initialize player and alien
+# Initialize player
 player = Player()
-alien = Alien()
+
+# Initialize aliens
+aliens = []
+for i in range(6):  # Create 6 aliens
+    alien_x = 50 + i * 100  # Space aliens evenly across the screen
+    alien_y = 50
+    aliens.append(Alien(alien_x, alien_y))
 
 # Main game loop
 running = True
@@ -82,11 +97,13 @@ while running:
     player.x = max(0, min(player.x, 800 - player.img.get_width()))
     player.y = max(0, min(player.y, 600 - player.img.get_height()))
 
+    # Move and draw the aliens
+    for alien in aliens:
+        alien.move()
+        alien.draw()
+
     # Draw the player
     player.draw()
-
-    # Draw the alien
-    alien.draw()
 
     # Update the display
     pygame.display.update()
