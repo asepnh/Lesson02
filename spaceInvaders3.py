@@ -8,6 +8,10 @@ pygame.display.set_caption("Space Invaders")
 # Load background image
 background = pygame.image.load("background.png")
 
+# Load sound effects
+alien_destroyed_sound = pygame.mixer.Sound("explosion.wav")
+bullet_fired_sound = pygame.mixer.Sound("bullet.wav")  # Load bullet sound
+
 # Clock for controlling FPS
 clock = pygame.time.Clock()
 
@@ -114,6 +118,7 @@ while running:
                 bullet_x = player.x + player.img.get_width() // 2 - 2  # Center bullet on player
                 bullet_y = player.y
                 bullets.append(Bullet(bullet_x, bullet_y))
+                bullet_fired_sound.play()  # Play bullet sound
                 spacebar_pressed = True  # Set the flag to prevent continuous firing
         if event.type == pygame.KEYUP:
             if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
@@ -146,6 +151,7 @@ while running:
             for alien in aliens:
                 if bullet_rect.colliderect(alien.get_rect()):
                     print("Bullet hit alien!")
+                    alien_destroyed_sound.play()  # Play sound when alien is destroyed
                     bullet.active = False  # Deactivate the bullet
                     aliens.remove(alien)  # Remove the alien
                     break
