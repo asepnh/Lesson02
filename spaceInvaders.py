@@ -19,6 +19,15 @@ class Player(object):
         # Draw a simple triangular spaceship
         pygame.draw.polygon(screen, (0, 255, 0), [(self.x, self.y), (self.x - 20, self.y + 40), (self.x + 20, self.y + 40)])
 
+# Enemy class
+class Alien(object):
+   def __init__(self):
+       self.img = pygame.image.load("alien.png")
+       self.x = 368 # enemy at center, explain
+       self.y = 50
+       self.x_change = 5
+       self.y_change = 10
+
 # Initialize player
 player = Player()
 
