@@ -30,10 +30,10 @@ class Alien(object):
         # Load the original alien image
         original_img = pygame.image.load("alien.png")
         
-        # Scale the image to 10% of its original size
+        # Scale the image to 5% of its original size
         self.img = pygame.transform.scale(original_img, 
-                                          (int(original_img.get_width() * 0.05), 
-                                           int(original_img.get_height() * 0.05)))
+                                          (int(original_img.get_width() * 0.025), 
+                                           int(original_img.get_height() * 0.025)))
         
         # Center the alien horizontally
         self.x = (800 - self.img.get_width()) // 2
