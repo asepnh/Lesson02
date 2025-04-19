@@ -24,8 +24,29 @@ class Player(object):
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
 
-# Initialize player
+# Enemy class
+class Alien(object):
+    def __init__(self):
+        # Load the original alien image
+        original_img = pygame.image.load("alien.png")
+        
+        # Scale the image to 10% of its original size
+        self.img = pygame.transform.scale(original_img, 
+                                          (int(original_img.get_width() * 0.05), 
+                                           int(original_img.get_height() * 0.05)))
+        
+        # Center the alien horizontally
+        self.x = (800 - self.img.get_width()) // 2
+        self.y = 50  # Initial y position
+        self.x_change = 5
+        self.y_change = 10
+
+    def draw(self):
+        screen.blit(self.img, (self.x, self.y))
+
+# Initialize player and alien
 player = Player()
+alien = Alien()
 
 # Main game loop
 running = True
@@ -63,6 +84,9 @@ while running:
 
     # Draw the player
     player.draw()
+
+    # Draw the alien
+    alien.draw()
 
     # Update the display
     pygame.display.update()
