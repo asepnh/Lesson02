@@ -27,17 +27,13 @@ class Player(object):
 # Bullet class
 class Bullet(object):
     def __init__(self, x, y):
-        try:
-            self.img = pygame.image.load("bullet.png")
-            print("Bullet image loaded successfully!")
-        except pygame.error as e:
-            print(f"Error loading bullet image: {e}. Using placeholder.")
-            self.img = pygame.Surface((10, 20))  # Placeholder rectangle
-            self.img.fill((255, 0, 0))  # Red color for the placeholder
         self.x = x
         self.y = y
         self.y_change = -10  # Bullet moves upward
-        self.active = True  # Bullet is active when fired
+        self.width = 5       # Width of the bullet
+        self.height = 15     # Height of the bullet
+        self.color = (255, 0, 0)  # Red color for the bullet
+        self.active = True   # Bullet is active when fired
 
     def move(self):
         if self.active:
@@ -47,7 +43,7 @@ class Bullet(object):
 
     def draw(self):
         if self.active:
-            screen.blit(self.img, (self.x, self.y))
+            pygame.draw.rect(screen, self.color, (self.x, self.y, self.width, self.height))
 
 # Enemy class
 class Alien(object):
@@ -55,10 +51,10 @@ class Alien(object):
         # Load the original alien image
         original_img = pygame.image.load("alien.png")
         
-        # Scale the image to 10% of its original size
+        # Scale the image to 2.5% of its original size
         self.img = pygame.transform.scale(original_img, 
-                                          (int(original_img.get_width() * 0.1), 
-                                           int(original_img.get_height() * 0.1)))
+                                          (int(original_img.get_width() * 0.025), 
+                                           int(original_img.get_height() * 0.025)))
         
         # Set the initial position
         self.x = x
@@ -77,6 +73,10 @@ class Alien(object):
 
     def draw(self):
         screen.blit(self.img, (self.x, self.y))
+
+    def get_rect(self):
+        # Return the rectangle for collision detection
+        return pygame.Rect(self.x, self.y, self.img.get_width(), self.img.get_height())
 
 # Initialize player
 player = Player()
@@ -108,24 +108,17 @@ while running:
                 player.x_change = -5
             if event.key == pygame.K_RIGHT:
                 player.x_change = 5
-            if event.key == pygame.K_UP:
-                player.y_change = -5
-            if event.key == pygame.K_DOWN:
-                player.y_change = 5
             if event.key == pygame.K_SPACE and not spacebar_pressed:
                 print("Firing bullet...")
                 # Fire a bullet
-                bullet_x = player.x + player.img.get_width() // 2 - 5  # Center bullet on player
+                bullet_x = player.x + player.img.get_width() // 2 - 2  # Center bullet on player
                 bullet_y = player.y
                 bullets.append(Bullet(bullet_x, bullet_y))
                 spacebar_pressed = True  # Set the flag to prevent continuous firing
         if event.type == pygame.KEYUP:
             if event.key in [pygame.K_LEFT, pygame.K_RIGHT]:
                 player.x_change = 0
-            if event.key in [pygame.K_UP, pygame.K_DOWN]:
-                player.y_change = 0
             if event.key == pygame.K_SPACE:
-                print("Spacebar released")
                 spacebar_pressed = False  # Reset the flag when the spacebar is released
 
     # Update player position
@@ -143,9 +136,19 @@ while running:
 
     # Move and draw the bullets
     for bullet in bullets:
-        print(f"Bullet position: ({bullet.x}, {bullet.y})")
         bullet.move()
         bullet.draw()
+
+    # Check for collisions between bullets and aliens
+    for bullet in bullets:
+        if bullet.active:
+            bullet_rect = pygame.Rect(bullet.x, bullet.y, bullet.width, bullet.height)
+            for alien in aliens:
+                if bullet_rect.colliderect(alien.get_rect()):
+                    print("Bullet hit alien!")
+                    bullet.active = False  # Deactivate the bullet
+                    aliens.remove(alien)  # Remove the alien
+                    break
 
     # Remove inactive bullets
     bullets = [bullet for bullet in bullets if bullet.active]
